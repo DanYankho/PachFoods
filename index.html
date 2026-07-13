@@ -10,7 +10,7 @@
     <style>
         :root {
             --ivory: #FAFAF8;
-            --terracotta: #C0613A;  /* Warmer, food-friendly accent */
+            --terracotta: #C0613A;  
             --charcoal: #2C2C2C;
             --saffron: #E5A823;
             --herb: #6B8E23;
@@ -48,7 +48,7 @@
         .hero-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5); /* Darkens image for text readability */
+            background: rgba(0, 0, 0, 0.5); 
             z-index: -1;
         }
         .hero-content { max-width: 800px; }
@@ -118,6 +118,19 @@
         .card-title { font-size: 1.25rem; color: var(--charcoal); }
         .card-price { font-weight: 600; color: var(--terracotta); white-space: nowrap; }
         .card-desc { font-size: 0.875rem; color: #666; margin-bottom: 1rem; flex: 1; }
+        
+        /* Dynamic Servings Display on Card */
+        .servings-display { 
+            font-size: 0.85rem; 
+            color: var(--herb); 
+            font-weight: 600; 
+            background: rgba(107, 142, 35, 0.1); 
+            padding: 6px 10px; 
+            border-radius: 6px; 
+            margin-bottom: 1rem; 
+            display: none; /* Hidden by default */
+        }
+        
         .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
         .tag { font-size: 12px; padding: 4px 8px; background: var(--ivory); border-radius: 4px; color: #666; border: 1px solid #eee; }
         
@@ -127,7 +140,6 @@
         .step-val { width: 30px; text-align: center; font-size: 1rem; font-weight: 500; }
         .add-btn { padding: 0.6rem 1.2rem; background: var(--charcoal); color: var(--ivory); border: none; border-radius: 50px; cursor: pointer; font-size: 0.875rem; transition: transform 0.2s var(--ease-out-soft); }
         .add-btn:active { transform: scale(0.95); }
-        .add-btn.added { background: var(--herb); }
 
         /* --- SLIDE-OUT CART --- */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
@@ -137,7 +149,17 @@
         .cart-header { display: flex; justify-content: space-between; align-items: center; padding: 2rem; border-bottom: 1px solid #eee; }
         .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: #999; line-height: 1; }
         .cart-content { flex: 1; overflow-y: auto; padding: 2rem; }
-        .cart-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
+        
+        /* Cart Item Styling with Image */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
+        .cart-item-info { display: flex; align-items: center; gap: 1rem; }
+        .cart-item-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; }
+        .cart-item-text p { font-weight: 500; margin-bottom: 4px; }
+        .cart-item-text small { font-size: 0.8rem; color: #888; }
+        .cart-item-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+        .cart-item-price { font-weight: 600; }
+        .remove-btn { background: none; border: none; color: #d9534f; cursor: pointer; font-size: 0.75rem; padding: 0; }
+        
         .cart-total { display: flex; justify-content: space-between; padding: 1.5rem 0; margin-top: 0.5rem; border-top: 2px solid var(--charcoal); border-bottom: 2px solid var(--charcoal); margin-bottom: 2rem; }
         .form-group { margin-bottom: 1.5rem; }
         .form-label { display: block; font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--charcoal); margin-bottom: 0.5rem; }
@@ -150,9 +172,6 @@
         .disclaimer { text-align: center; font-size: 0.8rem; color: #888; margin-top: 1rem; }
         .success-msg { text-align: center; padding: 4rem 1rem; }
         .success-check { width: 80px; height: 80px; background: rgba(107, 142, 35, 0.1); border-radius: 50%; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; color: var(--herb); font-size: 3rem; }
-        
-        .filters::-webkit-scrollbar { display: none; }
-        .filters { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body>
@@ -196,9 +215,7 @@
     </div>
 
     <!-- MENU GRID -->
-    <main class="menu-grid" id="menu-grid">
-        <!-- Populated by JS -->
-    </main>
+    <main class="menu-grid" id="menu-grid"></main>
 
     <!-- OVERLAY & CART -->
     <div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
@@ -207,29 +224,28 @@
             <h3>Your Selection</h3>
             <button class="close-btn" onclick="toggleCart(false)">&times;</button>
         </div>
-        <div class="cart-content" id="cart-content">
-            <!-- Populated by JS -->
-        </div>
+        <div class="cart-content" id="cart-content"></div>
     </div>
 
     <script>
         // --- DATA: YOUR MENU ---
+        // Note: servingSize is the numeric amount per platter for live calculation
         const menuData = [
-            { id: "m1", name: "Mandasi (Plain)", desc: "Soft, fried dough. Served plain.", servingDesc: "25 pieces", price: 14000, image: "images/mandasi.webp", popular: false },
-            { id: "m2", name: "Mandasi (Sprinkled)", desc: "Soft, fried dough coated with sugar.", servingDesc: "25 pieces", price: 15000, image: "images/mandasi-sugar.webp", popular: true },
-            { id: "m3", name: "Mandasi (Vanilla)", desc: "Soft, fried dough with vanilla flavouring, coated with sugar.", servingDesc: "25 pieces", price: 16000, image: "images/mandasi-vanilla.webp", popular: false },
-            { id: "m4", name: "Zitumbuwa", desc: "Mashed ripe bananas mixed into batter and deep-fried until golden.", servingDesc: "30 pieces", price: 16000, image: "images/zitumbuwa.webp", popular: false },
-            { id: "m5", name: "Mbatata", desc: "Sliced sweet potatoes, battered and fried. Lightly crisp outside, soft inside.", servingDesc: "25 pieces", price: 15000, image: "images/mbatata.webp", popular: false },
-            { id: "m6", name: "Samosas", desc: "Triangular pastry pockets with minced beef & spices, or mixed vegetables.", servingDesc: "30 pieces", price: 18000, image: "images/samosas.webp", popular: true },
-            { id: "m7", name: "Meat Pies", desc: "Shortcrust pastry filled with seasoned minced beef. Baked until golden.", servingDesc: "20 pieces", price: 20000, image: "images/meat-pies.webp", popular: false },
-            { id: "m8", name: "Sausage Rolls", desc: "Puff pastry wrapped around seasoned beef sausage meat. Sliced into bite-size pieces.", servingDesc: "25 pieces", price: 20000, image: "images/sausage-rolls.webp", popular: false },
-            { id: "m9", name: "Mtedza", desc: "Chalimbana peanuts, dry-roasted with a light touch of salt.", servingDesc: "Large bowl", price: 8000, image: "images/mtedza.webp", popular: false },
-            { id: "m10", name: "Chimanga Chophika", desc: "Fresh local maize, boiled until tender. Cut into chunks. Served warm with salt.", servingDesc: "10 pieces", price: 10000, image: "images/chimanga.webp", popular: false },
-            { id: "m11", name: "Kanyenya", desc: "Small chunks of beef, seasoned and deep-fried. Served with Nali sauce or lemon.", servingDesc: "Serves 10", price: 30000, image: "images/kanyenya.webp", popular: true },
-            { id: "m12", name: "Chips & Chicken Bites", desc: "Crispy fried potato chips served with small battered chicken pieces.", servingDesc: "Serves 10", price: 28000, image: "images/chips-chicken.webp", popular: false },
-            { id: "m13", name: "Boiled Eggs", desc: "Simple, whole boiled eggs. Peeled and halved, sprinkled with salt and pepper.", servingDesc: "20 eggs", price: 6000, image: "images/eggs.webp", popular: false },
-            { id: "m14", name: "Chigumu", desc: "Traditional Malawian banana bread. Baked until firm and golden. Sliced into pieces.", servingDesc: "1 loaf (8-10 slices)", price: 12000, image: "images/chigumu.webp", popular: false },
-            { id: "m15", name: "Chocolate Cupcakes", desc: "Simple chocolate cupcakes with a light chocolate topping.", servingDesc: "20 pieces", price: 18000, image: "images/cupcakes.webp", popular: false }
+            { id: "m1", name: "Mandasi (Plain)", desc: "Soft, fried dough. Served plain.", servingDesc: "25 pieces", servingSize: 25, unit: "pieces", price: 14000, image: "images/mandasi.webp", popular: false },
+            { id: "m2", name: "Mandasi (Sprinkled)", desc: "Soft, fried dough coated with sugar.", servingDesc: "25 pieces", servingSize: 25, unit: "pieces", price: 15000, image: "images/mandasi-sugar.webp", popular: true },
+            { id: "m3", name: "Mandasi (Vanilla)", desc: "Soft, fried dough with vanilla flavouring, coated with sugar.", servingDesc: "25 pieces", servingSize: 25, unit: "pieces", price: 16000, image: "images/mandasi-vanilla.webp", popular: false },
+            { id: "m4", name: "Zitumbuwa", desc: "Mashed ripe bananas mixed into batter and deep-fried until golden.", servingDesc: "30 pieces", servingSize: 30, unit: "pieces", price: 16000, image: "images/zitumbuwa.webp", popular: false },
+            { id: "m5", name: "Mbatata", desc: "Sliced sweet potatoes, battered and fried. Lightly crisp outside, soft inside.", servingDesc: "25 pieces", servingSize: 25, unit: "pieces", price: 15000, image: "images/mbatata.webp", popular: false },
+            { id: "m6", name: "Samosas", desc: "Triangular pastry pockets with minced beef & spices, or mixed vegetables.", servingDesc: "30 pieces", servingSize: 30, unit: "pieces", price: 18000, image: "images/samosas.webp", popular: true },
+            { id: "m7", name: "Meat Pies", desc: "Shortcrust pastry filled with seasoned minced beef. Baked until golden.", servingDesc: "20 pieces", servingSize: 20, unit: "pieces", price: 20000, image: "images/meat-pies.webp", popular: false },
+            { id: "m8", name: "Sausage Rolls", desc: "Puff pastry wrapped around seasoned beef sausage meat. Sliced into bite-size pieces.", servingDesc: "25 pieces", servingSize: 25, unit: "pieces", price: 20000, image: "images/sausage-rolls.webp", popular: false },
+            { id: "m9", name: "Mtedza", desc: "Chalimbana peanuts, dry-roasted with a light touch of salt.", servingDesc: "Large bowl", servingSize: 1, unit: "bowls", price: 8000, image: "images/mtedza.webp", popular: false },
+            { id: "m10", name: "Chimanga Chophika", desc: "Fresh local maize, boiled until tender. Cut into chunks. Served warm with salt.", servingDesc: "10 pieces", servingSize: 10, unit: "pieces", price: 10000, image: "images/chimanga.webp", popular: false },
+            { id: "m11", name: "Kanyenya", desc: "Small chunks of beef, seasoned and deep-fried. Served with Nali sauce or lemon.", servingDesc: "Serves 10", servingSize: 10, unit: "servings", price: 30000, image: "images/kanyenya.webp", popular: true },
+            { id: "m12", name: "Chips & Chicken Bites", desc: "Crispy fried potato chips served with small battered chicken pieces.", servingDesc: "Serves 10", servingSize: 10, unit: "servings", price: 28000, image: "images/chips-chicken.webp", popular: false },
+            { id: "m13", name: "Boiled Eggs", desc: "Simple, whole boiled eggs. Peeled and halved, sprinkled with salt and pepper.", servingDesc: "20 eggs", servingSize: 20, unit: "eggs", price: 6000, image: "images/eggs.webp", popular: false },
+            { id: "m14", name: "Chigumu", desc: "Traditional Malawian banana bread. Baked until firm and golden. Sliced into pieces.", servingDesc: "1 loaf (8-10 slices)", servingSize: 1, unit: "loaves", price: 12000, image: "images/chigumu.webp", popular: false },
+            { id: "m15", name: "Chocolate Cupcakes", desc: "Simple chocolate cupcakes with a light chocolate topping.", servingDesc: "20 pieces", servingSize: 20, unit: "pieces", price: 18000, image: "images/cupcakes.webp", popular: false }
         ];
 
         // NOTE: REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
@@ -257,6 +273,9 @@
                             <span class="card-price">${formatPrice(item.price)}</span>
                         </div>
                         <p class="card-desc">${item.desc}</p>
+                        
+                        <div class="servings-display" id="servings-${item.id}"></div>
+                        
                         <div class="tags">
                             <span class="tag">${item.servingDesc} per platter</span>
                         </div>
@@ -266,11 +285,27 @@
                                 <span class="step-val" id="qty-${item.id}">${cart[item.id] || 0}</span>
                                 <button class="step-btn" onclick="updateQty('${item.id}', 1)">+</button>
                             </div>
-                            <button class="add-btn" id="add-${item.id}" onclick="updateQty('${item.id}', 1)">Add</button>
+                            <button class="add-btn" onclick="updateQty('${item.id}', 1)">Add</button>
                         </div>
                     </div>
                 </div>
             `).join('');
+            updateCardServings(); // Update dynamic servings text immediately on render
+        }
+
+        // Updates the "You are ordering: X pieces" text on the cards
+        function updateCardServings() {
+            menuData.forEach(item => {
+                const qty = cart[item.id] || 0;
+                const displayDiv = document.getElementById(`servings-${item.id}`);
+                if (qty > 0) {
+                    const totalServings = qty * item.servingSize;
+                    displayDiv.textContent = `You are ordering: ${totalServings} ${item.unit}`;
+                    displayDiv.style.display = 'block';
+                } else {
+                    displayDiv.style.display = 'none';
+                }
+            });
         }
 
         function renderCart() {
@@ -298,13 +333,17 @@
                             const item = menuData.find(i => i.id === id);
                             return `
                                 <div class="cart-item">
-                                    <div>
-                                        <p style="font-weight:500; margin-bottom: 4px;">${item.name}</p>
-                                        <p style="font-size:0.8rem; color:#888;">${formatPrice(item.price)} x ${qty}</p>
+                                    <div class="cart-item-info">
+                                        <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+                                        <div class="cart-item-text">
+                                            <p>${item.name}</p>
+                                            <small>${qty} platter(s) × ${formatPrice(item.price)}</small><br>
+                                            <small style="color: var(--herb); font-weight: 600;">${qty * item.servingSize} ${item.unit} total</small>
+                                        </div>
                                     </div>
-                                    <div style="display:flex; align-items:center; gap:1rem;">
-                                        <span style="font-weight:600;">${formatPrice(item.price * qty)}</span>
-                                        <button type="button" onclick="updateQty('${id}', -${qty})" style="background:none; border:none; color:#d9534f; cursor:pointer; font-size:0.8rem;">Remove</button>
+                                    <div class="cart-item-actions">
+                                        <span class="cart-item-price">${formatPrice(item.price * qty)}</span>
+                                        <button type="button" class="remove-btn" onclick="updateQty('${id}', -${qty})">Remove</button>
                                     </div>
                                 </div>
                             `;
@@ -364,8 +403,6 @@
             } else {
                 cart[id] = newQty;
             }
-            
-            // Update UI visually without full re-render if possible, but for simplicity:
             renderMenu();
             renderCart();
         }
