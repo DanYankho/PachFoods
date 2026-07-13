@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Catering & Snacks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #FAFAF8;
+            --terracotta: #C0613A;  /* Warmer, food-friendly accent */
+            --charcoal: #2C2C2C;
+            --saffron: #E5A823;
+            --herb: #6B8E23;
+            --warm-gray: #8C8580;
+            --ease-out-soft: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--ivory);
+            color: var(--charcoal);
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* --- LANDING / HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            color: var(--ivory);
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('images/hero-bg.webp') center/cover no-repeat;
+            z-index: -2;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5); /* Darkens image for text readability */
+            z-index: -1;
+        }
+        .hero-content { max-width: 800px; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; line-height: 1.2; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2.5rem; font-weight: 300; opacity: 0.9; }
+        .cta-btn {
+            background: var(--terracotta);
+            color: #fff;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.3s var(--ease-out-soft), background 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+        .cta-btn:hover { transform: scale(1.05); background: #A85230; }
+
+        /* --- ABOUT / HISTORY SECTION --- */
+        .about-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        .about-img {
+            width: 100%;
+            aspect-ratio: 4/5;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .about-text h2 { color: var(--terracotta); font-size: 2.5rem; margin-bottom: 1.5rem; }
+        .about-text p { margin-bottom: 1rem; color: #555; font-size: 1.1rem; }
+        
+        @media (max-width: 768px) {
+            .about-section { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 1.5rem; text-align: center; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+
+        /* --- MENU & NAVIGATION --- */
+        nav { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(10px); background: rgba(250, 250, 248, 0.9); border-bottom: 1px solid rgba(44, 44, 44, 0.1); }
+        .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
+        .nav-title { font-size: 1.5rem; color: var(--terracotta); }
+        .cart-btn { position: relative; padding: 0.5rem 1.5rem; background: var(--charcoal); color: var(--ivory); border: none; border-radius: 50px; cursor: pointer; transition: transform 0.3s var(--ease-out-soft); }
+        .cart-btn:hover { transform: scale(1.02); }
+        .cart-badge { position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; background: var(--saffron); color: var(--charcoal); font-size: 12px; font-weight: bold; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        
+        .menu-header { text-align: center; padding: 4rem 1.5rem 2rem; }
+        .menu-header h2 { font-size: 3rem; color: var(--charcoal); }
+        .menu-header p { color: var(--warm-gray); margin-top: 0.5rem; }
+
+        .menu-grid { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 8rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; }
+        .card { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: all 0.3s var(--ease-out-soft); display: flex; flex-direction: column; border: 1px solid rgba(0,0,0,0.03); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08); }
+        .card-img-container { position: relative; aspect-ratio: 4/3; overflow: hidden; background: #f0f0f0; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease-out-soft); }
+        .card:hover .card-img { transform: scale(1.05); }
+        .badge-popular { position: absolute; top: 12px; left: 12px; background: var(--saffron); color: var(--charcoal); font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; }
+        .card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; align-items: baseline; gap: 1rem; }
+        .card-title { font-size: 1.25rem; color: var(--charcoal); }
+        .card-price { font-weight: 600; color: var(--terracotta); white-space: nowrap; }
+        .card-desc { font-size: 0.875rem; color: #666; margin-bottom: 1rem; flex: 1; }
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+        .tag { font-size: 12px; padding: 4px 8px; background: var(--ivory); border-radius: 4px; color: #666; border: 1px solid #eee; }
+        
+        .card-actions { display: flex; justify-content: space-between; align-items: center; margin-top: auto; border-top: 1px solid #eee; padding-top: 1rem; }
+        .stepper { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 50px; }
+        .step-btn { width: 36px; height: 36px; background: none; border: none; cursor: pointer; font-size: 1.2rem; color: #555; display: flex; align-items: center; justify-content: center; }
+        .step-val { width: 30px; text-align: center; font-size: 1rem; font-weight: 500; }
+        .add-btn { padding: 0.6rem 1.2rem; background: var(--charcoal); color: var(--ivory); border: none; border-radius: 50px; cursor: pointer; font-size: 0.875rem; transition: transform 0.2s var(--ease-out-soft); }
+        .add-btn:active { transform: scale(0.95); }
+        .add-btn.added { background: var(--herb); }
+
+        /* --- SLIDE-OUT CART --- */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .overlay.open { opacity: 1; pointer-events: auto; }
+        .cart-panel { position: fixed; top: 0; right: 0; height: 100%; width: 100%; max-width: 480px; background: #fff; box-shadow: -10px 0 30px rgba(0,0,0,0.1); z-index: 50; transform: translateX(100%); transition: transform 0.4s var(--ease-out-soft); display: flex; flex-direction: column; }
+        .cart-panel.open { transform: translateX(0); }
+        .cart-header { display: flex; justify-content: space-between; align-items: center; padding: 2rem; border-bottom: 1px solid #eee; }
+        .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: #999; line-height: 1; }
+        .cart-content { flex: 1; overflow-y: auto; padding: 2rem; }
+        .cart-item { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid #f0f0f0; }
+        .cart-total { display: flex; justify-content: space-between; padding: 1.5rem 0; margin-top: 0.5rem; border-top: 2px solid var(--charcoal); border-bottom: 2px solid var(--charcoal); margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--charcoal); margin-bottom: 0.5rem; }
+        .form-input { width: 100%; padding: 0.85rem 1rem; background: var(--ivory); border: 1px solid #ddd; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; transition: border 0.3s; }
+        .form-input:focus { border-color: var(--terracotta); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .submit-btn { width: 100%; padding: 1.1rem; background: var(--terracotta); color: #fff; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: transform 0.2s var(--ease-out-soft); margin-top: 1rem; font-weight: 600; }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .disclaimer { text-align: center; font-size: 0.8rem; color: #888; margin-top: 1rem; }
+        .success-msg { text-align: center; padding: 4rem 1rem; }
+        .success-check { width: 80px; height: 80px; background: rgba(107, 142, 35, 0.1); border-radius: 50%; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; color: var(--herb); font-size: 3rem; }
+        
+        .filters::-webkit-scrollbar { display: none; }
+        .filters { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+
+    <!-- HERO / LANDING SECTION -->
+    <section class="hero" id="top">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Taste of Home, Crafted for Your Gatherings</h1>
+            <p>Authentic local snacks and catering, made with fresh ingredients and a passion for community. Build your perfect event menu with us in just a few clicks.</p>
+            <a href="#menu" class="cta-btn">Build Your Order</a>
+        </div>
+    </section>
+
+    <!-- ABOUT / HISTORY SECTION -->
+    <section class="about-section">
+        <img src="images/about-cooks.webp" alt="Our team preparing fresh food" class="about-img">
+        <div class="about-text">
+            <h2>Our Story</h2>
+            <p>Born from a love for traditional Malawian flavors, our kitchen started small—serving warm mandasi and freshly roasted mtedza at local community events. Over the years, we've grown into a trusted catering partner for families and businesses alike.</p>
+            <p>We believe that great food brings people together. Whether you are hosting a family gathering, a corporate lunch, or a special celebration, we handle the cooking so you can focus on the moments that matter.</p>
+            <p>Use this page to browse our snack selections, build your platters, and send us an inquiry. We will get back to you to finalize the details and make your event unforgettable.</p>
+        </div>
+    </section>
+
+    <!-- MENU NAVIGATION -->
+    <nav id="menu">
+        <div class="nav-container">
+            <h2 class="nav-title">Snacks Menu</h2>
+            <button class="cart-btn" onclick="toggleCart(true)">
+                Selection <span id="cart-count" class="cart-badge" style="display:none;">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MENU HEADER -->
+    <div class="menu-header">
+        <h2>Build Your Event</h2>
+        <p>Select the snacks you love. Minimum order is 1 platter per item.</p>
+    </div>
+
+    <!-- MENU GRID -->
+    <main class="menu-grid" id="menu-grid">
+        <!-- Populated by JS -->
+    </main>
+
+    <!-- OVERLAY & CART -->
+    <div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
+    <div class="cart-panel" id="cart-panel">
+        <div class="cart-header">
+            <h3>Your Selection</h3>
+            <button class="close-btn" onclick="toggleCart(false)">&times;</button>
+        </div>
+        <div class="cart-content" id="cart-content">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- DATA: YOUR MENU ---
+        const menuData = [
+            { id: "m1", name: "Mandasi (Plain)", desc: "Soft, fried dough. Served plain.", servingDesc: "25 pieces", price: 14000, image: "images/mandasi.webp", popular: false },
+            { id: "m2", name: "Mandasi (Sprinkled)", desc: "Soft, fried dough coated with sugar.", servingDesc: "25 pieces", price: 15000, image: "images/mandasi-sugar.webp", popular: true },
+            { id: "m3", name: "Mandasi (Vanilla)", desc: "Soft, fried dough with vanilla flavouring, coated with sugar.", servingDesc: "25 pieces", price: 16000, image: "images/mandasi-vanilla.webp", popular: false },
+            { id: "m4", name: "Zitumbuwa", desc: "Mashed ripe bananas mixed into batter and deep-fried until golden.", servingDesc: "30 pieces", price: 16000, image: "images/zitumbuwa.webp", popular: false },
+            { id: "m5", name: "Mbatata", desc: "Sliced sweet potatoes, battered and fried. Lightly crisp outside, soft inside.", servingDesc: "25 pieces", price: 15000, image: "images/mbatata.webp", popular: false },
+            { id: "m6", name: "Samosas", desc: "Triangular pastry pockets with minced beef & spices, or mixed vegetables.", servingDesc: "30 pieces", price: 18000, image: "images/samosas.webp", popular: true },
+            { id: "m7", name: "Meat Pies", desc: "Shortcrust pastry filled with seasoned minced beef. Baked until golden.", servingDesc: "20 pieces", price: 20000, image: "images/meat-pies.webp", popular: false },
+            { id: "m8", name: "Sausage Rolls", desc: "Puff pastry wrapped around seasoned beef sausage meat. Sliced into bite-size pieces.", servingDesc: "25 pieces", price: 20000, image: "images/sausage-rolls.webp", popular: false },
+            { id: "m9", name: "Mtedza", desc: "Chalimbana peanuts, dry-roasted with a light touch of salt.", servingDesc: "Large bowl", price: 8000, image: "images/mtedza.webp", popular: false },
+            { id: "m10", name: "Chimanga Chophika", desc: "Fresh local maize, boiled until tender. Cut into chunks. Served warm with salt.", servingDesc: "10 pieces", price: 10000, image: "images/chimanga.webp", popular: false },
+            { id: "m11", name: "Kanyenya", desc: "Small chunks of beef, seasoned and deep-fried. Served with Nali sauce or lemon.", servingDesc: "Serves 10", price: 30000, image: "images/kanyenya.webp", popular: true },
+            { id: "m12", name: "Chips & Chicken Bites", desc: "Crispy fried potato chips served with small battered chicken pieces.", servingDesc: "Serves 10", price: 28000, image: "images/chips-chicken.webp", popular: false },
+            { id: "m13", name: "Boiled Eggs", desc: "Simple, whole boiled eggs. Peeled and halved, sprinkled with salt and pepper.", servingDesc: "20 eggs", price: 6000, image: "images/eggs.webp", popular: false },
+            { id: "m14", name: "Chigumu", desc: "Traditional Malawian banana bread. Baked until firm and golden. Sliced into pieces.", servingDesc: "1 loaf (8-10 slices)", price: 12000, image: "images/chigumu.webp", popular: false },
+            { id: "m15", name: "Chocolate Cupcakes", desc: "Simple chocolate cupcakes with a light chocolate topping.", servingDesc: "20 pieces", price: 18000, image: "images/cupcakes.webp", popular: false }
+        ];
+
+        // NOTE: REPLACE WITH YOUR GOOGLE APPS SCRIPT URL
+        const APPS_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL'; 
+
+        // --- STATE ---
+        let cart = {};
+
+        // --- HELPER: FORMAT CURRENCY ---
+        function formatPrice(price) {
+            return 'MK ' + price.toLocaleString();
+        }
+
+        // --- RENDER LOGIC ---
+        function renderMenu() {
+            document.getElementById('menu-grid').innerHTML = menuData.map(item => `
+                <div class="card">
+                    <div class="card-img-container">
+                        <img src="${item.image}" alt="${item.name}" class="card-img" loading="lazy">
+                        ${item.popular ? '<span class="badge-popular">Popular</span>' : ''}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3 class="card-title">${item.name}</h3>
+                            <span class="card-price">${formatPrice(item.price)}</span>
+                        </div>
+                        <p class="card-desc">${item.desc}</p>
+                        <div class="tags">
+                            <span class="tag">${item.servingDesc} per platter</span>
+                        </div>
+                        <div class="card-actions">
+                            <div class="stepper">
+                                <button class="step-btn" onclick="updateQty('${item.id}', -1)">-</button>
+                                <span class="step-val" id="qty-${item.id}">${cart[item.id] || 0}</span>
+                                <button class="step-btn" onclick="updateQty('${item.id}', 1)">+</button>
+                            </div>
+                            <button class="add-btn" id="add-${item.id}" onclick="updateQty('${item.id}', 1)">Add</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCart() {
+            const cartItems = Object.entries(cart);
+            const count = cartItems.reduce((acc, [, qty]) => acc + qty, 0);
+            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-count').style.display = count > 0 ? 'flex' : 'none';
+
+            const content = document.getElementById('cart-content');
+            
+            if (cartItems.length === 0) {
+                content.innerHTML = `<div style="text-align:center; padding: 4rem 1rem; color: #888;">Your selection is empty.<br>Add some snacks from the menu to begin building your order.</div>`;
+                return;
+            }
+
+            const grandTotal = cartItems.reduce((total, [id, qty]) => {
+                const item = menuData.find(i => i.id === id);
+                return total + (item ? item.price * qty : 0);
+            }, 0);
+
+            content.innerHTML = `
+                <form id="checkout-form" onsubmit="submitOrder(event)">
+                    <div id="cart-items">
+                        ${cartItems.map(([id, qty]) => {
+                            const item = menuData.find(i => i.id === id);
+                            return `
+                                <div class="cart-item">
+                                    <div>
+                                        <p style="font-weight:500; margin-bottom: 4px;">${item.name}</p>
+                                        <p style="font-size:0.8rem; color:#888;">${formatPrice(item.price)} x ${qty}</p>
+                                    </div>
+                                    <div style="display:flex; align-items:center; gap:1rem;">
+                                        <span style="font-weight:600;">${formatPrice(item.price * qty)}</span>
+                                        <button type="button" onclick="updateQty('${id}', -${qty})" style="background:none; border:none; color:#d9534f; cursor:pointer; font-size:0.8rem;">Remove</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div class="cart-total">
+                        <span style="font-family: 'Playfair Display', serif; font-size: 1.2rem;">Estimated Total</span>
+                        <span style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--terracotta);">${formatPrice(grandTotal)}</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Your Vision</label>
+                        <select name="eventType" class="form-input" required>
+                            <option value="">Event Type</option>
+                            <option>Family Gathering</option>
+                            <option>Corporate Lunch</option>
+                            <option>Birthday Party</option>
+                            <option>Community Event</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-row" style="margin-bottom: 1.5rem;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <input type="date" name="eventDate" class="form-input" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <input type="time" name="eventTime" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" name="guests" class="form-input" min="1" required placeholder="Expected Guest Count">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">About You</label>
+                        <input type="text" name="name" class="form-input" required placeholder="Full Name">
+                        <input type="email" name="email" class="form-input" required placeholder="e.g., maria.smith@email.com" style="margin-top: 1rem;">
+                        <input type="tel" name="phone" class="form-input" required placeholder="Phone Number" style="margin-top: 1rem;">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Final Touches</label>
+                        <textarea name="notes" class="form-input" rows="3" placeholder="Any special requests or dietary needs? Let us know."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submit-btn">Submit Inquiry</button>
+                    <p class="disclaimer">This is a no-obligation inquiry. We’ll reach out to confirm availability and delivery details.</p>
+                </form>
+            `;
+        }
+
+        // --- INTERACTION LOGIC ---
+        function updateQty(id, delta) {
+            const newQty = (cart[id] || 0) + delta;
+            if (newQty <= 0) {
+                delete cart[id];
+            } else {
+                cart[id] = newQty;
+            }
+            
+            // Update UI visually without full re-render if possible, but for simplicity:
+            renderMenu();
+            renderCart();
+        }
+
+        function toggleCart(open) {
+            document.getElementById('cart-panel').classList.toggle('open', open);
+            document.getElementById('overlay').classList.toggle('open', open);
+        }
+
+        async function submitOrder(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Sending Inquiry...';
+
+            const formData = new FormData(e.target);
+            const selections = Object.entries(cart).map(([id, qty]) => {
+                const item = menuData.find(i => i.id === id);
+                return { name: item.name, qty, price: item.price, total: item.price * qty };
+            });
+
+            const payload = {
+                orderId: `ORD-${Date.now()}`,
+                timestamp: new Date().toISOString(),
+                event: { type: formData.get('eventType'), date: formData.get('eventDate'), time: formData.get('eventTime'), guests: formData.get('guests') },
+                client: { name: formData.get('name'), email: formData.get('email'), phone: formData.get('phone') },
+                notes: formData.get('notes'),
+                selections: selections,
+                grandTotal: selections.reduce((acc, s) => acc + s.total, 0)
+            };
+
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                // Success UI
+                cart = {};
+                document.getElementById('cart-content').innerHTML = `
+                    <div class="success-msg">
+                        <div class="success-check">✓</div>
+                        <h4 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 0.5rem;">Inquiry Received</h4>
+                        <p style="color: #666; margin-bottom: 2rem;">Thank you for considering us. We will reach out to you shortly to finalize your order.</p>
+                        <button class="submit-btn" onclick="toggleCart(false); renderMenu(); renderCart();">Close</button>
+                    </div>
+                `;
+                renderMenu();
+            } catch (error) {
+                alert('There was an error submitting your inquiry. Please try again.');
+                btn.disabled = false;
+                btn.textContent = 'Submit Inquiry';
+            }
+        }
+
+        // --- INIT ---
+        renderMenu();
+        renderCart();
+    </script>
+</body>
+</html>
