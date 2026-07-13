@@ -3,11 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <!-- Standard favicon -->
-    <link rel="icon" type="image/png" href="browser.png">
-    
-    <!-- For Apple devices -->
-    <link rel="apple-touch-icon" href="browser.png">
     <title>PachFoods - Catering & Snacks</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,9 +98,49 @@
         nav { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(10px); background: rgba(250, 250, 248, 0.9); border-bottom: 1px solid rgba(44, 44, 44, 0.1); }
         .nav-container { max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
         .nav-title { font-size: 1.5rem; color: var(--terracotta); }
+        
+        /* Cart Button & Gem Animation */
         .cart-btn { position: relative; padding: 0.5rem 1.5rem; background: var(--charcoal); color: var(--ivory); border: none; border-radius: 50px; cursor: pointer; transition: transform 0.3s var(--ease-out-soft); }
         .cart-btn:hover { transform: scale(1.02); }
-        .cart-badge { position: absolute; top: -4px; right: -4px; width: 20px; height: 20px; background: var(--saffron); color: var(--charcoal); font-size: 12px; font-weight: bold; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        
+        /* The Easter Egg / Orb Animation Class */
+        .cart-active {
+            background: var(--terracotta);
+            color: #fff;
+            animation: gem-bounce 1.5s infinite var(--ease-out-soft);
+        }
+        .cart-active:hover {
+            animation-play-state: paused; /* Pause bounce on hover so they can click it */
+            transform: scale(1.05);
+        }
+        .cart-badge { 
+            position: absolute; 
+            top: -4px; 
+            right: -4px; 
+            width: 20px; 
+            height: 20px; 
+            background: var(--saffron); 
+            color: var(--charcoal); 
+            font-size: 12px; 
+            font-weight: bold; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 0 5px rgba(229, 168, 35, 0.8); /* Glow on the badge */
+        }
+
+        /* Keyframes for the bounce and glow */
+        @keyframes gem-bounce {
+            0%, 100% { 
+                transform: translateY(0) scale(1); 
+                box-shadow: 0 4px 10px rgba(192, 97, 58, 0.4);
+            }
+            50% { 
+                transform: translateY(-6px) scale(1.03); 
+                box-shadow: 0 15px 25px rgba(192, 97, 58, 0.6); /* Expanding glow */
+            }
+        }
         
         .menu-header { text-align: center; padding: 4rem 1.5rem 2rem; }
         .menu-header h2 { font-size: 3rem; color: var(--charcoal); }
@@ -207,8 +242,8 @@
     <nav id="menu">
         <div class="nav-container">
             <h2 class="nav-title">Snacks Menu</h2>
-            <button class="cart-btn" onclick="toggleCart(true)">
-                Selection <span id="cart-count" class="cart-badge" style="display:none;">0</span>
+            <button class="cart-btn" id="cart-button" onclick="toggleCart(true)">
+                Your Order <span id="cart-count" class="cart-badge" style="display:none;">0</span>
             </button>
         </div>
     </nav>
@@ -226,7 +261,7 @@
     <div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
     <div class="cart-panel" id="cart-panel">
         <div class="cart-header">
-            <h3>Your Selection</h3>
+            <h3>Your Order</h3>
             <button class="close-btn" onclick="toggleCart(false)">&times;</button>
         </div>
         <div class="cart-content" id="cart-content"></div>
@@ -316,13 +351,23 @@
         function renderCart() {
             const cartItems = Object.entries(cart);
             const count = cartItems.reduce((acc, [, qty]) => acc + qty, 0);
-            document.getElementById('cart-count').textContent = count;
-            document.getElementById('cart-count').style.display = count > 0 ? 'flex' : 'none';
+            const cartButton = document.getElementById('cart-button');
+            const cartBadge = document.getElementById('cart-count');
+            
+            cartBadge.textContent = count;
+            cartBadge.style.display = count > 0 ? 'flex' : 'none';
+
+            // Toggle the glowing bounce animation based on cart count
+            if (count > 0) {
+                cartButton.classList.add('cart-active');
+            } else {
+                cartButton.classList.remove('cart-active');
+            }
 
             const content = document.getElementById('cart-content');
             
             if (cartItems.length === 0) {
-                content.innerHTML = `<div style="text-align:center; padding: 4rem 1rem; color: #888;">Your selection is empty.<br>Add some snacks from the menu to begin building your order.</div>`;
+                content.innerHTML = `<div style="text-align:center; padding: 4rem 1rem; color: #888;">Your order is empty.<br>Add some snacks from the menu to begin building your order.</div>`;
                 return;
             }
 
@@ -458,6 +503,7 @@
                     </div>
                 `;
                 renderMenu();
+                renderCart();
             } catch (error) {
                 alert('There was an error submitting your inquiry. Please try again.');
                 btn.disabled = false;
