@@ -31,6 +31,89 @@
         }
         h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 
+        /* --- CONFIRMATION MODAL --- */
+        .confirmation-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s var(--ease-out-soft);
+            padding: 1.5rem;
+        }
+        .confirmation-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .confirmation-modal {
+            background: #fff;
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.5s var(--ease-out-soft);
+        }
+        .confirmation-overlay.active .confirmation-modal {
+            transform: translateY(0);
+        }
+        .confirmation-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(107, 142, 35, 0.1);
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--herb);
+            font-size: 3rem;
+        }
+        .confirmation-modal h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        .confirmation-modal p {
+            color: #666;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        .confirmation-modal .highlight {
+            color: var(--terracotta);
+            font-weight: 600;
+        }
+        .confirmation-close-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 1rem 2.5rem;
+            background: var(--terracotta);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s var(--ease-out-soft), background 0.3s;
+        }
+        .confirmation-close-btn:hover {
+            transform: scale(1.05);
+            background: #A85230;
+        }
+
         /* --- LANDING / HERO SECTION --- */
         .hero {
             min-height: 100vh;
@@ -114,7 +197,7 @@
             animation: gem-bounce 1.5s infinite var(--ease-out-soft);
         }
         .cart-active:hover {
-            animation-play-state: paused; /* Pause bounce on hover so they can click it */
+            animation-play-state: paused;
             transform: scale(1.05);
         }
         .cart-badge { 
@@ -131,7 +214,7 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            box-shadow: 0 0 5px rgba(229, 168, 35, 0.8); /* Glow on the badge */
+            box-shadow: 0 0 5px rgba(229, 168, 35, 0.8);
         }
 
         /* Keyframes for the bounce and glow */
@@ -142,7 +225,7 @@
             }
             50% { 
                 transform: translateY(-6px) scale(1.03); 
-                box-shadow: 0 15px 25px rgba(192, 97, 58, 0.6); /* Expanding glow */
+                box-shadow: 0 15px 25px rgba(192, 97, 58, 0.6);
             }
         }
         
@@ -172,7 +255,7 @@
             padding: 6px 10px; 
             border-radius: 6px; 
             margin-bottom: 1rem; 
-            display: none; /* Hidden by default */
+            display: none;
         }
         
         .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
@@ -219,6 +302,18 @@
     </style>
 </head>
 <body>
+
+    <!-- CONFIRMATION MODAL POPUP -->
+    <div class="confirmation-overlay" id="confirmation-overlay">
+        <div class="confirmation-modal">
+            <div class="confirmation-icon">✓</div>
+            <h3>Thank You for Your Order!</h3>
+            <p>Your inquiry has been successfully sent to the <span class="highlight">PachFoods team</span>.</p>
+            <p>We've received your selections and event details. One of our catering specialists will review your order and get in touch with you shortly to discuss the finer details, confirm availability, and finalize your booking.</p>
+            <p style="font-size: 0.9rem; color: #888;">We look forward to making your event memorable!</p>
+            <button class="confirmation-close-btn" onclick="closeConfirmation()">Return to Home</button>
+        </div>
+    </div>
 
     <!-- HERO / LANDING SECTION -->
     <section class="hero" id="top">
@@ -273,7 +368,6 @@
 
     <script>
         // --- DATA: YOUR MENU ---
-        // Note: servingSize is the numeric amount per platter for live calculation
         const menuData = [
             { id: "m1", name: "Mandasi (Plain)", desc: "Soft, fried dough. Served plain.", servingDesc: "25 pieces", servingSize: 25, unit: "pieces", price: 14000, image: "images/mandasi.webp", popular: false },
             { id: "m2", name: "Mandasi (Sprinkled)", desc: "Soft, fried dough coated with sugar.", servingDesc: "25 pieces", servingSize: 25, unit: "pieces", price: 15000, image: "images/mandasi-sugar.webp", popular: true },
@@ -301,6 +395,21 @@
         // --- HELPER: FORMAT CURRENCY ---
         function formatPrice(price) {
             return 'MK ' + price.toLocaleString();
+        }
+
+        // --- CONFIRMATION MODAL FUNCTIONS ---
+        function showConfirmation() {
+            document.getElementById('confirmation-overlay').classList.add('active');
+            // Prevent background scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeConfirmation() {
+            document.getElementById('confirmation-overlay').classList.remove('active');
+            // Re-enable scrolling
+            document.body.style.overflow = '';
+            // Scroll to top of page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // --- RENDER LOGIC ---
@@ -334,7 +443,7 @@
                     </div>
                 </div>
             `).join('');
-            updateCardServings(); // Update dynamic servings text immediately on render
+            updateCardServings();
         }
 
         // Updates the "You are ordering: X pieces" text on the cards
@@ -361,7 +470,6 @@
             cartBadge.textContent = count;
             cartBadge.style.display = count > 0 ? 'flex' : 'none';
 
-            // Toggle the glowing bounce animation based on cart count
             if (count > 0) {
                 cartButton.classList.add('cart-active');
             } else {
@@ -415,7 +523,7 @@
                             <option>Family Gathering</option>
                             <option>Corporate Lunch</option>
                             <option>Birthday Party</option>
-                            <option>Community Event</option>
+                            <option>Wedding Reception</option>
                             <option>Other</option>
                         </select>
                     </div>
@@ -444,7 +552,7 @@
                     </div>
 
                     <button type="submit" class="submit-btn" id="submit-btn">Submit Inquiry</button>
-                    <p class="disclaimer">This is a no-obligation inquiry. We’ll reach out to confirm availability and delivery details.</p>
+                    <p class="disclaimer">This is a no-obligation inquiry. We'll reach out to confirm availability and delivery details.</p>
                 </form>
             `;
         }
@@ -496,18 +604,21 @@
                     body: JSON.stringify(payload)
                 });
                 
-                // Success UI
+                // Close the cart panel
+                toggleCart(false);
+                
+                // Clear the cart
                 cart = {};
-                document.getElementById('cart-content').innerHTML = `
-                    <div class="success-msg">
-                        <div class="success-check">✓</div>
-                        <h4 style="font-family: 'Playfair Display', serif; font-size: 1.8rem; margin-bottom: 0.5rem;">Inquiry Received</h4>
-                        <p style="color: #666; margin-bottom: 2rem;">Thank you for considering us. We will reach out to you shortly to finalize your order.</p>
-                        <button class="submit-btn" onclick="toggleCart(false); renderMenu(); renderCart();">Close</button>
-                    </div>
-                `;
                 renderMenu();
                 renderCart();
+                
+                // Reset the button state
+                btn.disabled = false;
+                btn.textContent = 'Submit Inquiry';
+                
+                // Show the beautiful confirmation modal
+                showConfirmation();
+                
             } catch (error) {
                 alert('There was an error submitting your inquiry. Please try again.');
                 btn.disabled = false;
